@@ -5,6 +5,10 @@ import requests
 
 
 def get_OTids():
+    '''
+    Return a list of all the opentopo IDs in the data file.
+    needs to be made modular.
+    '''
 
     IDs = []
 
@@ -20,6 +24,9 @@ def get_OTids():
 
 
 def metadata_URL(ID):
+    '''
+    Build URL to the plaintext metadata at opentopo.
+    '''
     base_URL = ('http://opentopo.sdsc.edu/datasetMetadata?otCollectionID={0}&' +
                 'format=text')
 
@@ -29,6 +36,9 @@ def metadata_URL(ID):
 
 
 def get_short_name(ID):
+    '''
+    return the shortname for a given ID.
+    '''
     URL = metadata_URL(ID)
 
     metadata = urllib2.urlopen(URL).read(2000)
