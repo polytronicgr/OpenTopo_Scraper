@@ -1,6 +1,7 @@
 import os
 import csv
 import urllib2
+import requests
 
 
 def get_OTids():
@@ -46,8 +47,26 @@ def build_URLs(short_name):
     return (base_URL_pc.format(short_name), base_URL_rast.format(short_name))
 
 
+def test_URLs(URLs):
+    '''
+    Test if the converted urls are valid.
+    returns a tuple of bools with true == valid url and false == invalid.
+    Index 0 is the pointcloud (always valid) and Index 1
+    is the raster (does not always exist)
+    '''
+    result = []
+    for URL in URLs:
+        request = requests.get(URL)
+        if request.status_code < 400:
+            result.append(True)
+        else:
+            result.append(False)
+
+    return tuple(result)
+
+
 def download(URL):
     pass
 
 
-print build_URLs(get_short_name('OTLAS.082013.26910.1'))
+print test_URLs(build_URLs(get_short_name('OTLAS.082013.26910.1')))
