@@ -34,14 +34,20 @@ def get_short_name(ID):
             return line.split(': ')[1].strip()
 
 
-def build_URL(short_name):
-    base_URL = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/Raster/{0}'
+def build_URLs(short_name):
+    '''
+    returns a tuple of urls to the bulk pointcloud and bulk raster links
+    for a give shortname. Index 0 is the pointcloud (always valid) and Index 1
+    is the raster (does not always exist)
+    '''
+    base_URL_rast = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/Raster/{0}'
+    base_URL_pc = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/PC_Bulk/{0}'
 
-    return base_URL.format(short_name)
+    return (base_URL_pc.format(short_name), base_URL_rast.format(short_name))
 
 
 def download(URL):
     pass
 
 
-print build_URL(get_short_name('OTLAS.082013.26910.1'))
+print build_URLs(get_short_name('OTLAS.082013.26910.1'))
