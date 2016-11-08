@@ -65,29 +65,27 @@ def get_UTM_zone(EPSG):
     Use spatialreference.org to convert a EPSG code into a UTM zone.
     returns a tuple with the zone number and a boolean indicating if
     it is southern hemisphere (True) or northern (False)
+
+    If the EPSG code is not UTM, eg it is a state coordinate system in
+    the USA, the method returns None.
     '''
     URL = 'http://spatialreference.org/ref/epsg/{0}/proj4/'.format(EPSG)
 
     proj4 = urllib2.urlopen(URL).read()
     south = check_south(proj4)
 
-    return (proj4.split('+zone=')[1].split()[0].strip(), south)
+    # check for state coordinate systems
+    if '+zone=' in proj4:
+        return (proj4.split('+zone=')[1].split()[0].strip(), south)
+    else:
+        return None
 
 
 def get_EPSG_code(ID):
     '''
-    Assumes horizontal EPSG code is always reported first
+    Strip EPSG code from opentopoID
     '''
-    URL = metadata_URL(ID)
-
-    metadata = urllib2.urlopen(URL).read(2000)
-    metadata = metadata.split('\n')
-
-    for line in metadata:
-        if 'EPSG' in line:
-            EPSG_str = line.split('[EPSG:')[1].strip()
-            # this parses out the EPSG code
-            return ''.join([s for s in EPSG_str if s.isdigit()])
+    return ID.split('.')[2]
 
 
 def build_URLs(short_name):
@@ -123,5 +121,14 @@ def download(URL):
     pass
 
 
-print get_UTM_zone(get_EPSG_code('OTLAS.082013.26910.1'))
+with open('output.csv', 'rb') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar='\"')
+    next(reader)
+    for i, row in enumerate(reader):
+        url = build_URLs(get_short_name(row[4]))
+        test = test_URLs(url)
+        if test[1]:
+            print url[1]
+
+#print get_UTM_zone(get_EPSG_code('OTLAS.082013.26910.1'))
 #print test_URLs(build_URLs(get_short_name('OTLAS.082013.26910.1')))
